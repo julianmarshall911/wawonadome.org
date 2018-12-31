@@ -38,7 +38,7 @@ const styles = theme => ({
   },
 });
 
-class UserButton extends Component {
+class ProfileButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -105,7 +105,7 @@ class UserButton extends Component {
   }
 }
 
-UserButton.propTypes = {
+ProfileButton.propTypes = {
   history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   logout: PropTypes.func.isRequired,
@@ -126,6 +126,6 @@ export default withRouter(
     connect(
       mapStateToProps,
       mapDispatchToProps,
-    )(UserButton),
+    )(ProfileButton),
   ),
 );

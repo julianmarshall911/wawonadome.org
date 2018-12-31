@@ -8,7 +8,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
 import LoginButton from './LoginButton';
-import LogoutButton from './LogoutButton';
+import ProfileButton from './ProfileButton';
 
 import logo from '../data/img/logo.svg';
 
@@ -48,7 +48,7 @@ class NavBar extends Component {
               onClick={() => history.push('/')}
             />
           </div>
-          {isLoggedIn ? <LogoutButton /> : <LoginButton />}
+          {isLoggedIn ? <ProfileButton /> : <LoginButton />}
         </Toolbar>
       </AppBar>
     );

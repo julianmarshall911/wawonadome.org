@@ -48,7 +48,7 @@ export const login = (then = () => {}) => dispatch => {
     })
     .catch(err => {
       dispatch(failLogin());
-      dispatch(displayError('Login failed'));
+      dispatch(displayError(err.message));
     });
 };
 
@@ -72,10 +72,12 @@ export const logout = (then = () => {}) => dispatch => {
     .signOut()
     .then(() => {
       dispatch(completeLogout());
-      dispatch(displaySuccess('You are now logged out'));
       then();
     })
-    .catch(() => dispatch(failLogout()));
+    .catch(err => {
+      dispatch(displayError(err.message));
+      dispatch(failLogout());
+    });
 };
 
 // VERIFY USER
@@ -106,13 +108,13 @@ export const verifyValidUser = (result, dispatch, then = () => {}) => {
         then();
       } else {
         dispatch(failUserValidation());
-        dispatch(displayError('User validation failed'));
-        logout()(dispatch);
+        logout(() => dispatch(displayError('User validation failed')))(
+          dispatch,
+        );
       }
     })
     .catch(err => {
       dispatch(failUserValidation());
-      dispatch(displayError('User validation failed'));
-      logout()(dispatch);
+      logout(() => dispatch(displayError(err.message)))(dispatch);
     });
 };

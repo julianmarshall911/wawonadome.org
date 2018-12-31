@@ -47,7 +47,7 @@ export default (state = defaultState, action) => {
         .set('logoutStatus', status.set('complete', true))
         .set('user', null)
         .set('userDataFetchStatus', status.set('uninitialized', true))
-        .set('userData', null);
+        .set('userData', new Map());
     }
 
     case ActionTypes.LOGOUT_FAILED:
