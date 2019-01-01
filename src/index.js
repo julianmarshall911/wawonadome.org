@@ -11,6 +11,8 @@ import { store } from './stores/ReduxStore';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
+import * as serviceWorker from './serviceWorker';
+
 import Routes from './routes/Routes';
 
 require('dotenv').config();
@@ -47,3 +49,5 @@ ReactDOM.render(
   </MuiThemeProvider>,
   document.getElementById('root'),
 );
+
+serviceWorker.register();
