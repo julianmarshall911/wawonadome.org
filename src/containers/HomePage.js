@@ -98,11 +98,11 @@ class HomePage extends Component {
         <div className={classes.infoContent}>
           <Typography variant='h6'>
             Wassociates is a private, members-only secret society dedicated to
-            preserving the spirit and lifestyle of certain forefathers(s), who
-            shall remain nameless. Together, we try to deliver the experience of
-            nirvana in a haphazardly maintained, slightly old-fashioned,
+            preserving the spirit and lifestyle of certain forefathers (who
+            shall remain nameless). Together, we try to deliver the experience
+            of nirvana in a haphazardly maintained, slightly old-fashioned,
             somewhat run-down, yet delightful environment. By working together,
-            we find the happiness we seek...unless the electricity goes off.
+            we find the happiness we seek ... unless the electricity goes off.
           </Typography>
         </div>
         <div className={classes.infoContent}>

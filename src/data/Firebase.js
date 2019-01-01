@@ -38,33 +38,18 @@ class Firebase {
     this.firestore.settings(settings);
   }
 
-  googleProvider() {
-    return new app.auth.GoogleAuthProvider();
+  login(email, password) {
+    return this.auth.signInWithEmailAndPassword(email, password);
   }
 
   signOut() {
     this.auth.signOut();
   }
 
-  currentUser() {
-    return this.auth.currentUser;
-  }
-
-  getValidUsers() {
-    return this.firestore.collection('/members').get();
-  }
-
-  findUser(email) {
+  getUserData(email) {
     return this.firestore
       .collection('/members')
-      .where('emails', 'array-contains', email)
-      .get();
-  }
-
-  getUserData(displayName) {
-    return this.firestore
-      .collection('/members')
-      .where(app.firestore.FieldPath.documentId(), '==', displayName)
+      .where('email', '==', email)
       .get();
   }
 }

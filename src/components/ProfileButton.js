@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
 import {
+  Button,
   Menu,
   MenuItem,
   Typography,
@@ -13,6 +14,13 @@ import {
 
 import { logout } from '../actions/AuthActions';
 import { getLogoutPending, getUser } from '../selectors/AuthSelectors';
+import {
+  getLoggedInUserData,
+  getUserDataFetchUninitialized,
+  getUserDataFetchPending,
+} from '../selectors/DataSelectors';
+import { fetchUserData } from '../actions/DataActions';
+import { AccountCircle } from '@material-ui/icons';
 
 const styles = theme => ({
   buttonProgress: {
@@ -25,8 +33,9 @@ const styles = theme => ({
   wrapper: {
     cursor: 'pointer',
     position: 'relative',
+    textTransform: 'capitalize',
   },
-  photo: {
+  icon: {
     marginBottom: '-8px',
     marginLeft: '8px',
     width: '32px',
@@ -44,6 +53,13 @@ class ProfileButton extends Component {
     this.state = {
       anchorEl: undefined,
     };
+  }
+
+  componentWillMount() {
+    const { userDataFetchUninitialized, fetchUserData, user } = this.props;
+    if (userDataFetchUninitialized) {
+      fetchUserData(user.email);
+    }
   }
 
   setMenu(anchorEl) {
@@ -80,27 +96,27 @@ class ProfileButton extends Component {
   }
 
   render() {
-    const { loading, classes, user } = this.props;
+    const { loading, classes, myData, userDataFetchPending } = this.props;
     return (
-      <div
+      <Button
+        disabled={loading || userDataFetchPending}
         className={classes.wrapper}
         onClick={({ currentTarget }) => {
           if (!this.state.anchorEl) this.setMenu(currentTarget);
         }}>
         <Typography variant='h6' className={classes.text}>
-          Hi {(user.displayName || '').split(' ')[0]}
-          <img
-            src={user.photoURL}
-            className={classes.photo}
-            alt='User Profile'
-          />
+          Hi {myData && (myData.displayName || '').split(' ')[0]}
+          <AccountCircle className={classes.icon} />
         </Typography>
-        {loading && (
-          <CircularProgress size={24} className={classes.buttonProgress} />
+        {(loading || userDataFetchPending) && (
+          <CircularProgress
+            size={24}
+            className={classes.buttonProgress}
+            color='secondary'
+          />
         )}
-        <div />
         {this.renderUserMenu()}
-      </div>
+      </Button>
     );
   }
 }
@@ -115,10 +131,14 @@ ProfileButton.propTypes = {
 const mapStateToProps = state => ({
   loading: getLogoutPending(state),
   user: getUser(state),
+  myData: getLoggedInUserData(state),
+  userDataFetchUninitialized: getUserDataFetchUninitialized(state),
+  userDataFetchPending: getUserDataFetchPending(state),
 });
 
 const mapDispatchToProps = {
   logout,
+  fetchUserData,
 };
 
 export default withRouter(

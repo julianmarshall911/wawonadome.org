@@ -1,14 +1,13 @@
 import ActionTypes from './ActionTypes';
 import Firebase from '../data/Firebase';
 import { displayError, displaySuccess } from './AlertActions';
+import { fetchUserData } from './DataActions';
 
 export const initialize = userData => dispatch => {
   if (!userData) {
     dispatch(initLoggedOut());
   }
-  verifyValidUser({ user: userData }, dispatch, () =>
-    dispatch(initLoggedIn(userData)),
-  );
+  dispatch(initLoggedIn(userData));
 };
 
 export const initLoggedIn = userData => ({
@@ -18,6 +17,16 @@ export const initLoggedIn = userData => ({
 
 export const initLoggedOut = () => ({
   type: ActionTypes.INIT_LOGGED_OUT,
+});
+
+// LOGIN DIALOG STATE
+
+export const openLoginDialog = () => ({
+  type: ActionTypes.LOGIN_DIALOG_OPENED,
+});
+
+export const closeLoginDialog = () => ({
+  type: ActionTypes.LOGIN_DIALOG_CLOSED,
 });
 
 // LOGGING IN
@@ -35,16 +44,18 @@ export const failLogin = () => ({
   type: ActionTypes.LOGIN_FAILED,
 });
 
-export const login = (then = () => {}) => dispatch => {
+export const login = ({
+  email = undefined,
+  password = undefined,
+  then = () => {},
+}) => dispatch => {
   dispatch(beginLogin());
-  Firebase.auth
-    .signInWithPopup(Firebase.googleProvider())
+  Firebase.login(email, password)
     .then(result => {
-      verifyValidUser(result, dispatch, () => {
-        dispatch(completeLogin(result.user));
-        dispatch(displaySuccess('You are now logged in'));
-        then();
-      });
+      dispatch(completeLogin(result.user));
+      dispatch(displaySuccess('Successfully logged in'));
+      fetchUserData(email)(dispatch);
+      then();
     })
     .catch(err => {
       dispatch(failLogin());
@@ -77,44 +88,5 @@ export const logout = (then = () => {}) => dispatch => {
     .catch(err => {
       dispatch(displayError(err.message));
       dispatch(failLogout());
-    });
-};
-
-// VERIFY USER
-
-export const beginUserValidation = () => ({
-  type: ActionTypes.USER_VALIDATION_STARTED,
-});
-
-export const completeUserValidation = () => ({
-  type: ActionTypes.USER_VALIDATION_COMPLETED,
-});
-
-export const failUserValidation = () => ({
-  type: ActionTypes.USER_VALIDATION_FAILED,
-});
-
-export const verifyValidUser = (result, dispatch, then = () => {}) => {
-  dispatch(beginUserValidation());
-  Firebase.findUser(result.user.email)
-    .then(querySnapshot => {
-      const isAcceptedEmail =
-        querySnapshot.docs
-          .flatMap(doc => doc.data().emails)
-          .filter(email => email === result.user.email).length === 1;
-
-      if (isAcceptedEmail) {
-        dispatch(completeUserValidation());
-        then();
-      } else {
-        dispatch(failUserValidation());
-        logout(() => dispatch(displayError('User validation failed')))(
-          dispatch,
-        );
-      }
-    })
-    .catch(err => {
-      dispatch(failUserValidation());
-      logout(() => dispatch(displayError(err.message)))(dispatch);
     });
 };

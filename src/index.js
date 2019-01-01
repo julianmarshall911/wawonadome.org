@@ -29,6 +29,9 @@ const theme = createMuiTheme({
       main: '#fff',
       contrastText: '#fff8',
     },
+    error: {
+      main: '#f00',
+    },
     text: {
       disabled: '#aaaaaaaa',
     },

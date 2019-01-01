@@ -5,6 +5,9 @@ const ActionTypes = (types =>
   'INIT_LOGGED_IN',
   'INIT_LOGGED_OUT',
 
+  'LOGIN_DIALOG_OPENED',
+  'LOGIN_DIALOG_CLOSED',
+
   'LOGIN_STARTED',
   'LOGIN_COMPLETED',
   'LOGIN_FAILED',

@@ -3,10 +3,15 @@
 import { createSelector } from 'reselect';
 
 // State loading
+
 export const getInitialized = state =>
   !!state.get('initialStatus').get('complete');
 
 export const getUser = state => state.get('user');
+
+// Dialog state
+
+export const getDialogIsOpen = state => state.get('loginDialogOpen');
 
 // Verification status
 

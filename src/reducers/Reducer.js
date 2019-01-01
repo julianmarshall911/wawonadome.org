@@ -2,89 +2,97 @@
 
 import { Map } from 'immutable';
 import ActionTypes from '../actions/ActionTypes';
-
-const status = new Map({
-  uninitialized: false,
-  pending: false,
-  complete: false,
-  failed: false,
-});
+import { RequestStatus } from '../data/Constants';
 
 const defaultState = new Map({
   user: null,
-  initialStatus: status.set('pending', true),
-  loginStatus: status.set('uninitialized', true),
-  logoutStatus: status.set('uninitialized', true),
-  userVerificationStatus: status.set('uninitialized', true),
+  initialStatus: RequestStatus.set('pending', true),
+  loginStatus: RequestStatus.set('uninitialized', true),
+  logoutStatus: RequestStatus.set('uninitialized', true),
+  userVerificationStatus: RequestStatus.set('uninitialized', true),
   alert: new Map({
     open: false,
     message: 'Alert!',
     variant: 'success',
   }),
-  userDataFetchStatus: status.set('uninitialized', true),
+  userDataFetchStatus: new Map(),
   userData: new Map(),
+  loginDialogOpen: false,
 });
 
 export default (state = defaultState, action) => {
   switch (action.type) {
     case ActionTypes.LOGIN_STARTED:
-      return state.set('loginStatus', status.set('pending', true));
+      return state.set('loginStatus', RequestStatus.set('pending', true));
 
     case ActionTypes.LOGIN_COMPLETED: {
       return state
-        .set('loginStatus', status.set('complete', true))
+        .set('loginStatus', RequestStatus.set('complete', true))
         .set('user', action.payload);
     }
 
     case ActionTypes.LOGIN_FAILED:
-      return state.set('loginStatus', status.set('failed', true));
+      return state.set('loginStatus', RequestStatus.set('failed', true));
 
     case ActionTypes.LOGOUT_STARTED:
-      return state.set('logoutStatus', status.set('pending', true));
+      return state.set('logoutStatus', RequestStatus.set('pending', true));
 
     case ActionTypes.LOGOUT_COMPLETED: {
       return state
-        .set('logoutStatus', status.set('complete', true))
+        .set('logoutStatus', RequestStatus.set('complete', true))
         .set('user', null)
-        .set('userDataFetchStatus', status.set('uninitialized', true))
+        .set('userDataFetchStatus', RequestStatus.set('uninitialized', true))
         .set('userData', new Map());
     }
 
     case ActionTypes.LOGOUT_FAILED:
-      return state.set('logoutStatus', status.set('failed', true));
+      return state.set('logoutStatus', RequestStatus.set('failed', true));
 
     case ActionTypes.USER_VERIFICATION_STARTED:
-      return state.set('userVerificationStatus', status.set('pending', true));
+      return state.set(
+        'userVerificationStatus',
+        RequestStatus.set('pending', true),
+      );
 
     case ActionTypes.USER_VERIFICATION_COMPLETED: {
       return state
-        .set('userVerificationStatus', status.set('complete', true))
+        .set('userVerificationStatus', RequestStatus.set('complete', true))
         .set('user', null);
     }
 
     case ActionTypes.USER_VERIFICATION_FAILED:
-      return state.set('userVerificationStatus', status.set('failed', true));
+      return state.set(
+        'userVerificationStatus',
+        RequestStatus.set('failed', true),
+      );
 
     case ActionTypes.INIT_LOGGED_IN:
       return state
-        .set('initialStatus', status.set('complete', true))
+        .set('initialStatus', RequestStatus.set('complete', true))
         .set('user', action.payload);
 
     case ActionTypes.INIT_LOGGED_OUT:
-      return state.set('initialStatus', status.set('complete', true));
+      return state.set('initialStatus', RequestStatus.set('complete', true));
 
     case ActionTypes.USER_DATA_FETCH_STARTED:
-      return state.set('userDataFetchStatus', status.set('pending', true));
+      return state.update('userDataFetchStatus', statusMap =>
+        statusMap.set(action.payload, RequestStatus.set('pending', true)),
+      );
 
     case ActionTypes.USER_DATA_FETCH_COMPLETED: {
-      const { displayName, userData } = action.payload;
+      const { email, userData } = action.payload;
       return state
-        .set('userDataFetchStatus', status.set('complete', true))
-        .update('userData', dataMap => dataMap.set(displayName, userData));
+        .update('userDataFetchStatus', statusMap =>
+          statusMap.set(email, RequestStatus.set('complete', true)),
+        )
+        .update('userData', dataMap => dataMap.set(email, userData));
     }
 
     case ActionTypes.USER_DATA_FETCH_FAILED:
-      return state.set('userDataFetchStatus', status.set('failed', true));
+      return state.set(
+        'userDataFetchStatus',
+        RequestStatus.set('failed', true),
+      );
 
     case ActionTypes.DISPLAY_ALERT:
       return state.set(
@@ -98,6 +106,12 @@ export default (state = defaultState, action) => {
 
     case ActionTypes.CLOSE_ALERT:
       return state.set('alert', state.get('alert').set('open', false));
+
+    case ActionTypes.LOGIN_DIALOG_OPENED:
+      return state.set('loginDialogOpen', true);
+
+    case ActionTypes.LOGIN_DIALOG_CLOSED:
+      return state.set('loginDialogOpen', false);
 
     default:
       return state;

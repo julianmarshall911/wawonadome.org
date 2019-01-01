@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button/Button';
 import {
   getLoggedInUserData,
   getGroupUserData,
+  getUserDataFetchUninitialized,
 } from '../selectors/DataSelectors';
 import { fetchUserData } from '../actions/DataActions';
 
@@ -66,12 +67,18 @@ class MembersPage extends Component {
   }
 
   componentWillMount() {
-    const { myData, groupData, user, fetchUserData } = this.props;
-    if (!myData) {
-      fetchUserData(user.displayName);
+    const {
+      userDataFetchUninitialized,
+      groupData,
+      user,
+      fetchUserData,
+    } = this.props;
+
+    if (userDataFetchUninitialized) {
+      fetchUserData(user.email);
     }
     if (!groupData) {
-      fetchUserData('Wassociates');
+      fetchUserData('wassociates@wawonadome.org');
     }
   }
 
@@ -165,6 +172,7 @@ const mapStateToProps = state => ({
   user: getUser(state),
   myData: getLoggedInUserData(state),
   groupData: getGroupUserData(state),
+  userDataFetchUninitialized: getUserDataFetchUninitialized,
 });
 
 const mapDispatchToProps = {
