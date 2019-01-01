@@ -20,10 +20,15 @@ const styles = theme => ({
   page: {
     paddingTop: '64px',
   },
-  bannerContainer: {},
+  gridItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   banner: { width: '100vw' },
   buttonGrid: {
-    margin: '24px',
+    marginTop: '24px',
+    marginBottom: '24px',
   },
   buttonIcon: {
     width: '72px',
@@ -112,14 +117,22 @@ class MembersPage extends Component {
     }
     return (
       <Grid
-        container
         justify='center'
+        container
         className={classes.buttonGrid}
         spacing={8}>
         {Object.keys(data.links).map(key => {
           const Icon = mapLinkToIcon(key);
           return (
-            <Grid item container xs={12} sm={6} md={4} lg={3} key={key}>
+            <Grid
+              item
+              container
+              className={classes.gridItem}
+              xs={6}
+              sm={4}
+              md={3}
+              lg={3}
+              key={key}>
               <Button
                 onClick={() => window.open(data.links[key])}
                 className={classes.button}>
