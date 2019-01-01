@@ -29,6 +29,18 @@ export const closeLoginDialog = () => ({
   type: ActionTypes.LOGIN_DIALOG_CLOSED,
 });
 
+// PASSWORD RESET
+
+export const resetPassword = email => dispatch => {
+  if (!email) {
+    dispatch(displayError('Email address is required'));
+    return;
+  }
+  Firebase.sendPasswordResetEmail(email)
+    .then(() => dispatch(displaySuccess(`Email sent to ${email}`)))
+    .catch(err => dispatch(displayError(err.message)));
+};
+
 // LOGGING IN
 
 export const beginLogin = () => ({

@@ -12,6 +12,7 @@ import {
   login,
   closeLoginDialog,
   openLoginDialog,
+  resetPassword,
 } from '../actions/AuthActions';
 import {
   getLoginPending,
@@ -23,6 +24,7 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
+  Tooltip,
 } from '@material-ui/core';
 import ValidatedTextField from './ValidatedTextField';
 import { emailRegex } from '../data/Constants';
@@ -49,6 +51,10 @@ const styles = theme => ({
   spacer: {
     width: '100%',
   },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
 });
 
 class LoginButton extends Component {
@@ -71,7 +77,7 @@ class LoginButton extends Component {
 
   validateEmail(email) {
     if (email === '') {
-      return;
+      return 'Email required';
     }
     if (!emailRegex.test(email.toLowerCase())) {
       return 'Invalid email';
@@ -84,8 +90,19 @@ class LoginButton extends Component {
 
   validatePassword(password) {
     if (password === '') {
-      return 'Password is required';
+      return 'Password required';
     }
+  }
+
+  tooltip({ condition, message, component }) {
+    if (!condition) {
+      return component;
+    }
+    return (
+      <Tooltip placement='top' title={message}>
+        {component}
+      </Tooltip>
+    );
   }
 
   renderLoginDialog() {
@@ -96,6 +113,7 @@ class LoginButton extends Component {
       loading,
       login,
       history,
+      resetPassword,
     } = this.props;
     const { email, password } = this.state;
     const valid =
@@ -120,16 +138,32 @@ class LoginButton extends Component {
           />
         </DialogContent>
         <DialogContent>
-          <ValidatedTextField
-            className={classes.loginTextField}
-            placeholder='Password'
-            value={password}
-            type='password'
-            onChange={this.onChangePassword}
-            validate={this.validatePassword}
-          />
+          <div className={classes.row}>
+            <ValidatedTextField
+              className={classes.loginTextField}
+              placeholder='Password'
+              value={password}
+              type='password'
+              onChange={this.onChangePassword}
+              validate={this.validatePassword}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
+          {this.tooltip({
+            condition: this.validateEmail(email),
+            message: 'Enter a valid email',
+            component: (
+              <div disabled={this.validateEmail(email)}>
+                <Button
+                  disabled={!!this.validateEmail(email)}
+                  onClick={() => resetPassword(email)}
+                  style={{ flexShrink: 0 }}>
+                  Forgot Password
+                </Button>
+              </div>
+            ),
+          })}
           <Button onClick={closeLoginDialog} disabled={loading}>
             Cancel
           </Button>
@@ -199,6 +233,7 @@ const mapDispatchToProps = {
   login,
   closeLoginDialog,
   openLoginDialog,
+  resetPassword,
 };
 
 export default withRouter(
