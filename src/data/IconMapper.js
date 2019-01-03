@@ -13,6 +13,7 @@ import {
   Build,
   FormatPaint,
   AttachMoney,
+  Search,
 } from '@material-ui/icons';
 
 const iconMap = {
@@ -27,6 +28,7 @@ const iconMap = {
   Projects: Build,
   'Major Projects': FormatPaint,
   Finance: AttachMoney,
+  'Lost & Found': Search,
 };
 
 export const mapLinkToIcon = linkTitle => iconMap[linkTitle] || HelpOutline;
