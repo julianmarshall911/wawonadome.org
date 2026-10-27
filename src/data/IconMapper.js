@@ -1,20 +1,16 @@
-'use es6';
-
-import {
-  Settings,
-  HelpOutline,
-  InsertInvitation,
-  Explore,
-  WbCloudy,
-  LocalGroceryStore,
-  LockOpen,
-  Lock,
-  DeleteSweep,
-  Build,
-  FormatPaint,
-  AttachMoney,
-  Search,
-} from '@material-ui/icons';
+import AttachMoney from '@mui/icons-material/AttachMoney';
+import Build from '@mui/icons-material/Build';
+import DeleteSweep from '@mui/icons-material/DeleteSweep';
+import Explore from '@mui/icons-material/Explore';
+import FormatPaint from '@mui/icons-material/FormatPaint';
+import HelpOutline from '@mui/icons-material/HelpOutlineOutlined';
+import InsertInvitation from '@mui/icons-material/InsertInvitation';
+import LocalGroceryStore from '@mui/icons-material/LocalGroceryStore';
+import Lock from '@mui/icons-material/Lock';
+import LockOpen from '@mui/icons-material/LockOpen';
+import Search from '@mui/icons-material/Search';
+import Settings from '@mui/icons-material/Settings';
+import WbCloudy from '@mui/icons-material/WbCloudy';
 
 const iconMap = {
   'Admin Page': Settings,
