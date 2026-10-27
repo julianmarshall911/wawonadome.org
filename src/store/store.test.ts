@@ -1,9 +1,11 @@
+import type { UserCredential } from 'firebase/auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as Firebase from '../data/Firebase';
-import { makeStore } from '.';
+import { type AppStore, makeStore } from '.';
 import { selectAlert } from './alertSlice';
 import {
+  type AuthUser,
   authStateChanged,
   login,
   logout,
@@ -20,10 +22,14 @@ vi.mock('../data/Firebase', () => ({
   getUserData: vi.fn(),
 }));
 
-const user = { uid: '1', email: 'pat@example.com', displayName: 'Pat Doe' };
+const user: AuthUser = {
+  uid: '1',
+  email: 'pat@example.com',
+  displayName: 'Pat Doe',
+};
 
 describe('store', () => {
-  let store;
+  let store: AppStore;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -37,7 +43,9 @@ describe('store', () => {
   });
 
   it('stores a serializable user and shows an alert on login', async () => {
-    Firebase.login.mockResolvedValue({ user: { ...user, extra: () => {} } });
+    vi.mocked(Firebase.login).mockResolvedValue({
+      user: { ...user, getIdToken: () => Promise.resolve('token') },
+    } as unknown as UserCredential);
     store.dispatch(authStateChanged(null));
 
     await store.dispatch(login({ email: user.email, password: 'pw' }));
@@ -50,7 +58,7 @@ describe('store', () => {
   });
 
   it('shows the error message when login fails', async () => {
-    Firebase.login.mockRejectedValue(new Error('Wrong password'));
+    vi.mocked(Firebase.login).mockRejectedValue(new Error('Wrong password'));
 
     await store.dispatch(login({ email: user.email, password: 'pw' }));
 
@@ -62,7 +70,8 @@ describe('store', () => {
   });
 
   it('fetches user data once and clears it on logout', async () => {
-    Firebase.getUserData.mockResolvedValue({ links: { Map: 'https://x' } });
+    const data = { email: user.email, links: { Map: 'https://x' } };
+    vi.mocked(Firebase.getUserData).mockResolvedValue(data);
     store.dispatch(authStateChanged(user));
 
     await Promise.all([
@@ -73,7 +82,7 @@ describe('store', () => {
     expect(Firebase.getUserData).toHaveBeenCalledTimes(1);
     expect(selectUserData(store.getState(), user.email)).toEqual({
       status: 'complete',
-      data: { links: { Map: 'https://x' } },
+      data,
     });
 
     await store.dispatch(logout());
@@ -83,7 +92,7 @@ describe('store', () => {
   });
 
   it('completes the fetch when a member has no data', async () => {
-    Firebase.getUserData.mockResolvedValue(null);
+    vi.mocked(Firebase.getUserData).mockResolvedValue(null);
 
     await store.dispatch(fetchUserData(user.email));
 

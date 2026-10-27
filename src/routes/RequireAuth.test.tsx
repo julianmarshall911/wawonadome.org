@@ -4,13 +4,13 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
 import RequireAuth from './RequireAuth';
-import { makeStore } from '../store';
+import { type AppStore, makeStore } from '../store';
 import { selectAlert } from '../store/alertSlice';
 import { authStateChanged } from '../store/authSlice';
 
 vi.mock('../data/Firebase', () => ({}));
 
-const renderAt = (path, store) => {
+const renderAt = (path: string, store: AppStore) => {
   const router = createMemoryRouter(
     [
       { path: '/', element: <p>Home</p> },
@@ -49,7 +49,13 @@ describe('RequireAuth', () => {
 
   it('renders the page when logged in', async () => {
     const store = makeStore();
-    store.dispatch(authStateChanged({ uid: '1', email: 'pat@example.com' }));
+    store.dispatch(
+      authStateChanged({
+        uid: '1',
+        email: 'pat@example.com',
+        displayName: null,
+      }),
+    );
 
     renderAt('/members', store);
 

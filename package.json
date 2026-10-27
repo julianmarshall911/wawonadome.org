@@ -9,12 +9,13 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "typecheck": "tsc",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "deploy": "npm run build && firebase deploy"
+    "deploy": "nub run build && firebase deploy"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -34,6 +35,8 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -41,6 +44,8 @@
     "globals": "^17.13.0",
     "jsdom": "^30.1.3",
     "prettier": "^3.9.10",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.72.0",
     "vite": "^8.3.5",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"

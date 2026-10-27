@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 
 import Button from '@mui/material/Button';
@@ -8,34 +7,41 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
-import { logout, selectLogoutPending, selectUser } from '../store/authSlice';
+import {
+  type AuthUser,
+  logout,
+  selectLogoutPending,
+  selectUser,
+} from '../store/authSlice';
 import { fetchUserData, selectUserData } from '../store/dataSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function ProfileButton() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const user = useSelector(selectUser);
-  const logoutPending = useSelector(selectLogoutPending);
-  const { status, data } = useSelector(state =>
+  // Only rendered while logged in.
+  const user = useAppSelector(selectUser) as AuthUser;
+  const logoutPending = useAppSelector(selectLogoutPending);
+  const { status, data } = useAppSelector(state =>
     selectUserData(state, user.email),
   );
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    dispatch(fetchUserData(user.email));
+    void dispatch(fetchUserData(user.email));
   }, [dispatch, user.email]);
 
   const closeMenu = () => setAnchorEl(null);
-  const goTo = path => () => {
+  const goTo = (path: string) => () => {
     closeMenu();
-    navigate(path);
+    void navigate(path);
   };
   const handleLogout = () => {
     closeMenu();
     // Leave the members page first so it doesn't flash a "log in" error.
-    navigate('/');
-    dispatch(logout());
+    void navigate('/');
+    void dispatch(logout());
   };
 
   const firstName = data?.displayName?.split(' ')[0] ?? '';

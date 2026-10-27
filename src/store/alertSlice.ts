@@ -2,20 +2,36 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { login, logout, resetPassword } from './authSlice';
 import { fetchUserData } from './dataSlice';
 
-const show = (state, message, variant) => {
+export type AlertVariant = 'success' | 'error';
+
+interface AlertState {
+  open: boolean;
+  message: string;
+  variant: AlertVariant;
+}
+
+const show = (state: AlertState, message: string, variant: AlertVariant) => {
   state.open = true;
   state.message = message;
   state.variant = variant;
 };
 
+const initialState: AlertState = {
+  open: false,
+  message: '',
+  variant: 'success',
+};
+
 const alertSlice = createSlice({
   name: 'alert',
-  initialState: { open: false, message: '', variant: 'success' },
+  initialState,
   reducers: {
     showAlert: {
-      reducer: (state, { payload }) =>
-        show(state, payload.message, payload.variant),
-      prepare: (message, variant = 'success') => ({
+      reducer: (
+        state,
+        { payload }: { payload: { message: string; variant: AlertVariant } },
+      ) => show(state, payload.message, payload.variant),
+      prepare: (message: string, variant: AlertVariant = 'success') => ({
         payload: { message, variant },
       }),
     },
@@ -38,7 +54,8 @@ const alertSlice = createSlice({
           resetPassword.rejected,
           fetchUserData.rejected,
         ),
-        (state, { error }) => show(state, error.message, 'error'),
+        (state, { error }) =>
+          show(state, error.message ?? 'Something went wrong', 'error'),
       );
   },
   selectors: {

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -13,10 +12,15 @@ import Typography from '@mui/material/Typography';
 import { GROUP_EMAIL } from '../data/Constants';
 import { mapLinkToIcon } from '../data/IconMapper';
 import banner from '../data/img/member_banner.jpg';
-import { selectUser } from '../store/authSlice';
-import { fetchUserData, selectUserData } from '../store/dataSlice';
+import { type AuthUser, selectUser } from '../store/authSlice';
+import {
+  fetchUserData,
+  selectUserData,
+  type UserDataEntry,
+} from '../store/dataSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
-function LinkGrid({ entry: { status, data } }) {
+function LinkGrid({ entry: { status, data } }: { entry: UserDataEntry }) {
   if (status === 'idle' || status === 'pending') {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
@@ -59,15 +63,16 @@ function LinkGrid({ entry: { status, data } }) {
 }
 
 export default function MembersPage() {
-  const dispatch = useDispatch();
-  const user = useSelector(selectUser);
-  const myData = useSelector(state => selectUserData(state, user.email));
-  const groupData = useSelector(state => selectUserData(state, GROUP_EMAIL));
+  const dispatch = useAppDispatch();
+  // Only reachable through RequireAuth.
+  const user = useAppSelector(selectUser) as AuthUser;
+  const myData = useAppSelector(state => selectUserData(state, user.email));
+  const groupData = useAppSelector(state => selectUserData(state, GROUP_EMAIL));
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    dispatch(fetchUserData(user.email));
-    dispatch(fetchUserData(GROUP_EMAIL));
+    void dispatch(fetchUserData(user.email));
+    void dispatch(fetchUserData(GROUP_EMAIL));
   }, [dispatch, user.email]);
 
   return (
@@ -82,7 +87,7 @@ export default function MembersPage() {
         <Tabs
           centered
           value={tab}
-          onChange={(event, value) => setTab(value)}
+          onChange={(_event, value: number) => setTab(value)}
           indicatorColor='secondary'
           textColor='inherit'>
           <Tab label='My Links' />

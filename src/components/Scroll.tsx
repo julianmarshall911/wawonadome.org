@@ -1,8 +1,14 @@
+import type { RefObject } from 'react';
+
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import ArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-export default function Scroll({ to }) {
+interface ScrollProps {
+  to: RefObject<HTMLElement | null>;
+}
+
+export default function Scroll({ to }: ScrollProps) {
   return (
     <ButtonBase
       onClick={() => to.current?.scrollIntoView({ behavior: 'smooth' })}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 import Box from '@mui/material/Box';
@@ -22,8 +21,9 @@ import {
   selectLoginDialogOpen,
   selectLoginPending,
 } from '../store/authSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
-const validateEmail = email => {
+const validateEmail = (email: string) => {
   if (email === '') {
     return 'Email required';
   }
@@ -32,16 +32,16 @@ const validateEmail = email => {
   }
 };
 
-const validatePassword = password => {
+const validatePassword = (password: string) => {
   if (password === '') {
     return 'Password required';
   }
 };
 
 function LoginDialog() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const pending = useSelector(selectLoginPending);
+  const pending = useAppSelector(selectLoginPending);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -49,14 +49,10 @@ function LoginDialog() {
   const valid = !emailError && !validatePassword(password);
   const close = () => dispatch(closeLoginDialog());
 
-  const handleSubmit = async event => {
-    event.preventDefault();
-    if (!valid || pending) {
-      return;
-    }
+  const submit = async () => {
     try {
       await dispatch(login({ email, password })).unwrap();
-      navigate('/members', { replace: true });
+      await navigate('/members', { replace: true });
     } catch {
       // The error is shown by the alert slice.
     }
@@ -64,7 +60,14 @@ function LoginDialog() {
 
   return (
     <Dialog maxWidth='sm' fullWidth open onClose={pending ? undefined : close}>
-      <form onSubmit={handleSubmit} noValidate>
+      <form
+        noValidate
+        onSubmit={event => {
+          event.preventDefault();
+          if (valid && !pending) {
+            void submit();
+          }
+        }}>
         <DialogTitle>Log in</DialogTitle>
         <DialogContent>
           <ValidatedTextField
@@ -96,7 +99,7 @@ function LoginDialog() {
             <span>
               <Button
                 disabled={!!emailError || pending}
-                onClick={() => dispatch(resetPassword(email))}>
+                onClick={() => void dispatch(resetPassword(email))}>
                 Forgot Password
               </Button>
             </span>
@@ -114,10 +117,10 @@ function LoginDialog() {
 }
 
 export default function LoginButton() {
-  const dispatch = useDispatch();
-  const initialized = useSelector(selectAuthInitialized);
-  const pending = useSelector(selectLoginPending);
-  const dialogOpen = useSelector(selectLoginDialogOpen);
+  const dispatch = useAppDispatch();
+  const initialized = useAppSelector(selectAuthInitialized);
+  const pending = useAppSelector(selectLoginPending);
+  const dialogOpen = useAppSelector(selectLoginDialogOpen);
   return (
     <Box>
       <Button

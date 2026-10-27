@@ -11,6 +11,7 @@ Firebase config is read from a `.env` file (not checked in) using the
 nub install
 nub run dev      # local dev server
 nub run test     # unit tests (Vitest)
+nub run typecheck
 nub run lint     # ESLint
 nub run deploy   # build and deploy to Firebase Hosting
 ```

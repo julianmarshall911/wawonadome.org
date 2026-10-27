@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { type Ref, type RefObject, useRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -60,7 +60,7 @@ const sections = [
   },
 ];
 
-function Banner({ scrollTo }) {
+function Banner({ scrollTo }: { scrollTo: RefObject<HTMLElement | null> }) {
   return (
     <Box
       id='banner'
@@ -101,7 +101,7 @@ function Banner({ scrollTo }) {
   );
 }
 
-function Info({ ref }) {
+function Info({ ref }: { ref: Ref<HTMLDivElement> }) {
   return (
     <Box
       ref={ref}
@@ -142,7 +142,7 @@ function Info({ ref }) {
 }
 
 export default function HomePage() {
-  const infoRef = useRef(null);
+  const infoRef = useRef<HTMLDivElement>(null);
   return (
     <main>
       <Banner scrollTo={infoRef} />

@@ -1,3 +1,4 @@
+import type { SvgIconComponent } from '@mui/icons-material';
 import AttachMoney from '@mui/icons-material/AttachMoney';
 import Build from '@mui/icons-material/Build';
 import DeleteSweep from '@mui/icons-material/DeleteSweep';
@@ -12,7 +13,7 @@ import Search from '@mui/icons-material/Search';
 import Settings from '@mui/icons-material/Settings';
 import WbCloudy from '@mui/icons-material/WbCloudy';
 
-const iconMap = {
+const iconMap: Record<string, SvgIconComponent> = {
   'Admin Page': Settings,
   Calendar: InsertInvitation,
   Map: Explore,
@@ -27,4 +28,5 @@ const iconMap = {
   'Lost & Found': Search,
 };
 
-export const mapLinkToIcon = linkTitle => iconMap[linkTitle] || HelpOutline;
+export const mapLinkToIcon = (linkTitle: string): SvgIconComponent =>
+  iconMap[linkTitle] ?? HelpOutline;

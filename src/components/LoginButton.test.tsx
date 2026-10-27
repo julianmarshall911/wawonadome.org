@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { UserCredential } from 'firebase/auth';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -46,9 +47,9 @@ describe('LoginButton', () => {
   });
 
   it('logs in on Enter and goes to the members page', async () => {
-    Firebase.login.mockResolvedValue({
-      user: { uid: '1', email: 'pat@example.com' },
-    });
+    vi.mocked(Firebase.login).mockResolvedValue({
+      user: { uid: '1', email: 'pat@example.com', displayName: null },
+    } as UserCredential);
     const user = userEvent.setup();
     const { router } = renderButton();
 
@@ -63,7 +64,7 @@ describe('LoginButton', () => {
   });
 
   it('sends a password reset email', async () => {
-    Firebase.sendPasswordResetEmail.mockResolvedValue();
+    vi.mocked(Firebase.sendPasswordResetEmail).mockResolvedValue();
     const user = userEvent.setup();
     renderButton();
 

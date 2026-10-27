@@ -1,10 +1,10 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router';
 
 import Layout from './Layout';
 import RequireAuth from './RequireAuth';
 import HomePage from '../containers/HomePage';
 
-export const routes = [
+export const routes: RouteObject[] = [
   {
     element: <Layout />,
     children: [

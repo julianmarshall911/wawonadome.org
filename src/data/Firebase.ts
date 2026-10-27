@@ -5,7 +5,16 @@ import {
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  type User,
 } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
+
+// Shape of a document in the Firestore `members` collection.
+export interface MemberData {
+  email: string;
+  displayName?: string;
+  links?: Record<string, string>;
+}
 
 const env = import.meta.env;
 
@@ -22,24 +31,27 @@ const auth = getAuth(app);
 
 // Firestore is only needed once someone is logged in, so keep it out of the
 // initial bundle.
-let firestore;
+let firestore: Firestore | undefined;
 const loadFirestore = async () => {
   const module = await import('firebase/firestore');
   firestore ??= module.getFirestore(app);
   return { firestore, ...module };
 };
 
-export const onAuthChanged = callback => onAuthStateChanged(auth, callback);
+export const onAuthChanged = (callback: (user: User | null) => void) =>
+  onAuthStateChanged(auth, callback);
 
-export const login = (email, password) =>
+export const login = (email: string, password: string) =>
   signInWithEmailAndPassword(auth, email, password);
 
 export const logout = () => signOut(auth);
 
-export const sendPasswordResetEmail = email =>
+export const sendPasswordResetEmail = (email: string) =>
   firebaseSendPasswordResetEmail(auth, email);
 
-export const getUserData = async email => {
+export const getUserData = async (
+  email: string,
+): Promise<MemberData | null> => {
   const { firestore, collection, query, where, limit, getDocs } =
     await loadFirestore();
   const snapshot = await getDocs(
@@ -49,5 +61,6 @@ export const getUserData = async email => {
       limit(1),
     ),
   );
-  return snapshot.empty ? null : snapshot.docs[0].data();
+  const doc = snapshot.docs[0];
+  return doc ? (doc.data() as MemberData) : null;
 };

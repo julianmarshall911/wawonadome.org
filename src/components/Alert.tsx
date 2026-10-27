@@ -1,18 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
-
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 
-import { closeAlert, selectAlert } from '../store/alertSlice';
+import {
+  type AlertVariant,
+  closeAlert,
+  selectAlert,
+} from '../store/alertSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
-const backgroundColors = {
+const backgroundColors: Record<AlertVariant, string> = {
   error: '#a00',
   success: '#194F11',
 };
 
 export default function Alert() {
-  const dispatch = useDispatch();
-  const { open, message, variant } = useSelector(selectAlert);
+  const dispatch = useAppDispatch();
+  const { open, message, variant } = useAppSelector(selectAlert);
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

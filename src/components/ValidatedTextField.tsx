@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react';
-import TextField from '@mui/material/TextField';
+import TextField, { type TextFieldProps } from '@mui/material/TextField';
 
 const VALIDATION_DELAY_MS = 250;
 
+type ValidatedTextFieldProps = TextFieldProps & {
+  value: string;
+  // Returns an error message, or undefined when the value is valid.
+  validate?: (value: string) => string | undefined;
+};
+
 // A TextField that validates its value shortly after the user stops typing.
-// `validate` returns an error message, or undefined when the value is valid.
 export default function ValidatedTextField({
   value,
   validate,
   onChange,
   helperText,
   ...rest
-}) {
+}: ValidatedTextFieldProps) {
   const [dirty, setDirty] = useState(false);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState<string>();
 
   useEffect(() => {
     if (!dirty || !validate) {

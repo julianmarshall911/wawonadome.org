@@ -1,17 +1,42 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  type Dispatch,
+  type PayloadAction,
+} from '@reduxjs/toolkit';
+import type { User } from 'firebase/auth';
 import * as Firebase from '../data/Firebase';
 
+export interface AuthUser {
+  uid: string;
+  email: string;
+  displayName: string | null;
+}
+
+interface AuthState {
+  initialized: boolean;
+  user: AuthUser | null;
+  loginPending: boolean;
+  logoutPending: boolean;
+  loginDialogOpen: boolean;
+}
+
+interface Credentials {
+  email: string;
+  password: string;
+}
+
 // Firebase User objects aren't serializable, so only keep what we use.
-const toUser = user =>
-  user && {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
-  };
+// Every account signs in with email and password, so email is always set.
+const toUser = (user: User): AuthUser => ({
+  uid: user.uid,
+  email: user.email ?? '',
+  displayName: user.displayName,
+});
 
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password }) =>
+  async ({ email, password }: Credentials) =>
     toUser((await Firebase.login(email, password)).user),
 );
 
@@ -19,23 +44,25 @@ export const logout = createAsyncThunk('auth/logout', () => Firebase.logout());
 
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
-  async email => {
+  async (email: string) => {
     await Firebase.sendPasswordResetEmail(email);
     return email;
   },
 );
 
+const initialState: AuthState = {
+  initialized: false,
+  user: null,
+  loginPending: false,
+  logoutPending: false,
+  loginDialogOpen: false,
+};
+
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    initialized: false,
-    user: null,
-    loginPending: false,
-    logoutPending: false,
-    loginDialogOpen: false,
-  },
+  initialState,
   reducers: {
-    authStateChanged(state, { payload }) {
+    authStateChanged(state, { payload }: PayloadAction<AuthUser | null>) {
       state.initialized = true;
       state.user = payload;
     },
@@ -92,7 +119,9 @@ export const {
   selectLoginDialogOpen,
 } = authSlice.selectors;
 
-export const listenForAuthChanges = () => dispatch =>
-  Firebase.onAuthChanged(user => dispatch(authStateChanged(toUser(user))));
+export const listenForAuthChanges = () => (dispatch: Dispatch) =>
+  Firebase.onAuthChanged(user =>
+    dispatch(authStateChanged(user && toUser(user))),
+  );
 
 export default authSlice;

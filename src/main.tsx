@@ -17,7 +17,12 @@ import theme from './theme';
 
 store.dispatch(listenForAuthChanges());
 
-createRoot(document.getElementById('root')).render(
+const root = document.getElementById('root');
+if (!root) {
+  throw new Error('Missing #root element');
+}
+
+createRoot(root).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />

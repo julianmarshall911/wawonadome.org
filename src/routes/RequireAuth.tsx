@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router';
 
 import PageProgress from '../components/PageProgress';
 import { showAlert } from '../store/alertSlice';
 import { selectAuthInitialized, selectIsLoggedIn } from '../store/authSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function RequireAuth() {
-  const dispatch = useDispatch();
-  const initialized = useSelector(selectAuthInitialized);
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const dispatch = useAppDispatch();
+  const initialized = useAppSelector(selectAuthInitialized);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const denied = initialized && !isLoggedIn;
 
   useEffect(() => {

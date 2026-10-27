@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 
 import AppBar from '@mui/material/AppBar';
@@ -9,9 +8,10 @@ import LoginButton from './LoginButton';
 import ProfileButton from './ProfileButton';
 import logo from '../data/img/logo.svg';
 import { selectIsLoggedIn } from '../store/authSlice';
+import { useAppSelector } from '../store/hooks';
 
 export default function NavBar() {
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
   return (
     <AppBar position='fixed'>
       <Toolbar>
