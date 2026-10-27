@@ -9,7 +9,7 @@ interface LinkBoardProps {
   label: string;
 }
 
-// The member page's board of links, each a tag hung on the cabin wall.
+// The member page's board of links, each a small plank with an icon.
 export default function LinkBoard({
   entry: { status, data },
   label,
