@@ -1,0 +1,95 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-cut);
+  background: transparent;
+  color: var(--pine);
+  font-family: var(--font-camp);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.button[data-focus-visible] {
+  outline: 3px solid var(--alpenglow);
+  outline-offset: 2px;
+}
+
+.button[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.button[data-pending] {
+  cursor: progress;
+}
+
+.primary {
+  background: var(--pine);
+  color: var(--on-pine);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+}
+
+.primary[data-hovered] {
+  background: color-mix(in oklab, var(--pine) 86%, var(--ink));
+}
+
+.primary[data-pressed] {
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.22);
+  transform: translateY(1px);
+}
+
+.secondary {
+  border-color: var(--pine);
+}
+
+.secondary[data-hovered],
+.quiet[data-hovered] {
+  background: var(--pine-tint);
+}
+
+.quiet {
+  padding: 0 var(--space-3);
+}
+
+.beam {
+  color: var(--on-log);
+  border-color: var(--on-log);
+}
+
+.beam[data-hovered] {
+  background: rgba(244, 223, 174, 0.14);
+}
+
+.beam[data-focus-visible] {
+  outline-color: var(--on-log);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-round);
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

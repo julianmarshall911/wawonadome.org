@@ -1,0 +1,60 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgba(26, 20, 13, 0.55);
+}
+
+.overlay[data-entering] {
+  animation: fade 160ms ease-out;
+}
+
+.modal {
+  width: min(480px, 100%);
+  max-height: calc(100vh - 2 * var(--space-4));
+  overflow: auto;
+  border-radius: var(--radius-plank);
+  background: var(--paper-100);
+  box-shadow: var(--shadow-lift);
+  color: var(--ink);
+}
+
+.dialog {
+  outline: none;
+}
+
+.title {
+  padding: var(--space-4) var(--space-5);
+  background: var(--log);
+  border-bottom: 3px solid var(--honey);
+  color: var(--on-log);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.body {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.forgot {
+  margin-right: auto;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

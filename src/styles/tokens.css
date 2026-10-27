@@ -1,0 +1,91 @@
+/*
+ * Wassociates design tokens. Source of truth: the Wassociates design system
+ * (tokens.json). Daylight is the default; Lamplight follows the OS setting.
+ */
+:root {
+  color-scheme: light;
+
+  /* Color — Daylight */
+  --paper-50: #d8c18a;
+  --paper-100: #e4d09e;
+  --paper-200: #cbb276;
+  --paper-400: #a68a52;
+  --ink: #2a1f14;
+  --shingle: #4f4030;
+  --pine: #194f11;
+  --on-pine: #ffffff;
+  --pine-tint: #c3c78c;
+  --log: #5a3519;
+  --on-log: #f4dfae;
+  --honey: #a86a2f;
+  --alpenglow: #953c0c;
+  --river: #1d5566;
+  --on-river: #ffffff;
+  --ember: #8a2410;
+  --on-ember: #ffffff;
+
+  --shadow-plank:
+    0 1px 0 rgba(255, 250, 235, 0.6) inset, 0 1px 2px rgba(42, 31, 20, 0.2),
+    0 3px 8px rgba(42, 31, 20, 0.1);
+  --shadow-lift:
+    0 12px 32px rgba(42, 31, 20, 0.26), 0 2px 6px rgba(42, 31, 20, 0.14);
+
+  /* Type */
+  --font-sign: 'Zilla Slab', Rockwell, 'Roboto Slab', Georgia, serif;
+  --font-book: Alegreya, Georgia, 'Times New Roman', serif;
+  --font-camp: 'Cabin Condensed', 'Arial Narrow', system-ui, sans-serif;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Shape */
+  --radius-cut: 2px;
+  --radius-plank: 4px;
+  --radius-round: 999px;
+
+  /* Layout */
+  --page-max: 1120px;
+  --gutter: var(--space-4);
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: var(--space-6);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* Color — Lamplight */
+    --paper-50: #1a140d;
+    --paper-100: #261d13;
+    --paper-200: #32271a;
+    --paper-400: #56462f;
+    --ink: #f1e6d2;
+    --shingle: #bdab90;
+    --pine: #9bc77e;
+    --on-pine: #10210a;
+    --pine-tint: #25301a;
+    --log: #3b2413;
+    --on-log: #f4dfae;
+    --honey: #c98a4a;
+    --alpenglow: #f0954a;
+    --river: #86c3d3;
+    --on-river: #0d2229;
+    --ember: #f2876a;
+    --on-ember: #2a0c05;
+
+    --shadow-plank:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 2px 8px rgba(0, 0, 0, 0.45);
+    --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+}

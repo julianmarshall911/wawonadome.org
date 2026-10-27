@@ -1,17 +1,18 @@
 import { useState } from 'react';
+import {
+  Dialog,
+  Form,
+  Heading,
+  Modal,
+  ModalOverlay,
+} from 'react-aria-components';
 import { useNavigate } from 'react-router';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Tooltip from '@mui/material/Tooltip';
-import AccountIcon from '@mui/icons-material/AccountCircleOutlined';
-
-import ValidatedTextField from './ValidatedTextField';
+import Button from './Button';
+import Icon from './Icon';
+import TextField from './TextField';
 import { emailRegex } from '../data/Constants';
+import { showAlert } from '../store/alertSlice';
 import {
   closeLoginDialog,
   login,
@@ -22,31 +23,31 @@ import {
   selectLoginPending,
 } from '../store/authSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import styles from './LoginButton.module.css';
 
 const validateEmail = (email: string) => {
   if (email === '') {
-    return 'Email required';
+    return 'Enter your email address.';
   }
   if (!emailRegex.test(email.toLowerCase())) {
-    return 'Invalid email';
+    return 'Enter a full email address, like pat@wawonadome.org.';
   }
 };
 
 const validatePassword = (password: string) => {
   if (password === '') {
-    return 'Password required';
+    return 'Enter your password.';
   }
 };
 
 function LoginDialog() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const open = useAppSelector(selectLoginDialogOpen);
   const pending = useAppSelector(selectLoginPending);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const emailError = validateEmail(email);
-  const valid = !emailError && !validatePassword(password);
   const close = () => dispatch(closeLoginDialog());
 
   const submit = async () => {
@@ -58,61 +59,78 @@ function LoginDialog() {
     }
   };
 
+  const forgotPassword = () => {
+    if (validateEmail(email)) {
+      dispatch(
+        showAlert(
+          'Enter your email address above, then choose Forgot password.',
+          'error',
+        ),
+      );
+      return;
+    }
+    void dispatch(resetPassword(email));
+  };
+
   return (
-    <Dialog maxWidth='sm' fullWidth open onClose={pending ? undefined : close}>
-      <form
-        noValidate
-        onSubmit={event => {
-          event.preventDefault();
-          if (valid && !pending) {
-            void submit();
-          }
-        }}>
-        <DialogTitle>Log in</DialogTitle>
-        <DialogContent>
-          <ValidatedTextField
-            autoFocus
-            fullWidth
-            margin='dense'
-            label='Email address'
-            type='email'
-            autoComplete='username'
-            value={email}
-            onChange={event => setEmail(event.target.value)}
-            validate={validateEmail}
-          />
-          <ValidatedTextField
-            fullWidth
-            margin='dense'
-            label='Password'
-            type='password'
-            autoComplete='current-password'
-            value={password}
-            onChange={event => setPassword(event.target.value)}
-            validate={validatePassword}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Tooltip
-            placement='top'
-            title={emailError ? 'Enter a valid email' : ''}>
-            <span>
-              <Button
-                disabled={!!emailError || pending}
-                onClick={() => void dispatch(resetPassword(email))}>
-                Forgot Password
-              </Button>
-            </span>
-          </Tooltip>
-          <Button onClick={close} disabled={pending}>
-            Cancel
-          </Button>
-          <Button type='submit' disabled={!valid} loading={pending}>
+    <ModalOverlay
+      isOpen={open}
+      onOpenChange={isOpen => !isOpen && close()}
+      isDismissable={!pending}
+      isKeyboardDismissDisabled={pending}
+      className={styles.overlay}>
+      <Modal className={styles.modal}>
+        <Dialog className={styles.dialog}>
+          <Heading slot='title' className={styles.title}>
             Log in
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+          </Heading>
+          <Form
+            onSubmit={event => {
+              event.preventDefault();
+              if (!pending) {
+                void submit();
+              }
+            }}>
+            <div className={styles.body}>
+              <TextField
+                autoFocus
+                name='email'
+                type='email'
+                label='Email address'
+                autoComplete='username'
+                value={email}
+                onChange={setEmail}
+                validate={validateEmail}
+              />
+              <TextField
+                name='password'
+                type='password'
+                label='Password'
+                autoComplete='current-password'
+                value={password}
+                onChange={setPassword}
+                validate={validatePassword}
+              />
+            </div>
+            <div className={styles.actions}>
+              <Button
+                variant='quiet'
+                className={styles.forgot}
+                isDisabled={pending}
+                onPress={forgotPassword}>
+                Forgot password
+              </Button>
+              <Button variant='secondary' isDisabled={pending} onPress={close}>
+                Cancel
+              </Button>
+              <Button variant='primary' type='submit' isPending={pending}>
+                Log in
+              </Button>
+            </div>
+          </Form>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }
 
@@ -120,18 +138,16 @@ export default function LoginButton() {
   const dispatch = useAppDispatch();
   const initialized = useAppSelector(selectAuthInitialized);
   const pending = useAppSelector(selectLoginPending);
-  const dialogOpen = useAppSelector(selectLoginDialogOpen);
   return (
-    <Box>
+    <>
       <Button
-        color='secondary'
-        loading={pending || !initialized}
-        loadingPosition='end'
-        onClick={() => dispatch(openLoginDialog())}
-        endIcon={<AccountIcon sx={{ width: 32, height: 32 }} />}>
+        variant='beam'
+        isPending={pending || !initialized}
+        onPress={() => dispatch(openLoginDialog())}>
         Log in
+        <Icon name='account' size={20} />
       </Button>
-      {dialogOpen && <LoginDialog />}
-    </Box>
+      <LoginDialog />
+    </>
   );
 }

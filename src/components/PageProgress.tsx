@@ -1,16 +1,15 @@
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
+import { ProgressBar } from 'react-aria-components';
+
+import styles from './PageProgress.module.css';
 
 export default function PageProgress() {
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <CircularProgress color='primary' />
-    </Box>
+    <div className={styles.page}>
+      <ProgressBar
+        isIndeterminate
+        aria-label='Loading'
+        className={styles.spinner}
+      />
+    </div>
   );
 }

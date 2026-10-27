@@ -1,12 +1,6 @@
-import { type Ref, type RefObject, useRef } from 'react';
-
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-
-import Scroll from '../components/Scroll';
 import banner from '../data/img/homepage_banner.jpg';
 import logo from '../data/img/logo.svg';
+import styles from './HomePage.module.css';
 
 const sections = [
   {
@@ -60,93 +54,41 @@ const sections = [
   },
 ];
 
-function Banner({ scrollTo }: { scrollTo: RefObject<HTMLElement | null> }) {
+export default function HomePage() {
   return (
-    <Box
-      id='banner'
-      sx={{ position: 'relative', width: '100%', height: '100vh' }}>
-      <Box
-        component='img'
-        src={banner}
-        alt=''
-        sx={{
-          display: 'block',
-          objectFit: 'cover',
-          width: '100%',
-          height: '100vh',
-        }}
-      />
-      <Typography
-        variant='h1'
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: '#fff',
-          fontSize: '10em',
-          display: 'flex',
-          alignItems: 'center',
-        }}>
-        <Box
-          component='img'
-          src={logo}
-          alt=''
-          sx={{ width: 128, height: 128, mr: 1 }}
+    <main>
+      <section className={styles.hero}>
+        <img
+          className={styles.heroImage}
+          src={banner}
+          alt='Wawona Dome lit orange at sunset above the South Fork of the Merced River'
         />
-        Wassociates
-      </Typography>
-      <Scroll to={scrollTo} />
-    </Box>
-  );
-}
-
-function Info({ ref }: { ref: Ref<HTMLDivElement> }) {
-  return (
-    <Box
-      ref={ref}
-      id='info'
-      sx={{
-        position: 'relative',
-        width: '100%',
-        minHeight: 'calc(100vh - 64px)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        scrollMarginTop: '64px',
-      }}>
-      <Box sx={{ m: 4, mb: 0 }}>
-        <Typography variant='h6' component='p'>
+        <div className={styles.heroBody}>
+          <p className={styles.place}>Wawona, CA · Elev. 4,000 ft</p>
+          <h1 className={styles.mark}>
+            <img src={logo} alt='' />
+            Wassociates
+          </h1>
+        </div>
+      </section>
+      <div className={styles.content}>
+        <p className={styles.lead}>
           Wassociates is a private, members-only secret society dedicated to
           preserving the spirit and lifestyle of certain forefathers (who shall
           remain nameless). Together, we try to deliver the experience of
           nirvana in a haphazardly maintained, slightly old-fashioned, somewhat
           run-down, yet delightful environment. By working together, we find the
           happiness we seek ... unless the electricity goes off.
-        </Typography>
-      </Box>
-      <Box sx={{ m: 4, mb: 0 }}>
-        <Grid container spacing={3} sx={{ pt: 2 }}>
+        </p>
+        <div className={styles.history}>
           {sections.map(({ title, body }) => (
-            <Grid key={title} size={{ xs: 12, md: 4 }}>
-              <Typography variant='h6' component='h2'>
-                {title}
-              </Typography>
-              <Typography variant='body1'>{body}</Typography>
-            </Grid>
+            <section key={title} className={styles.section}>
+              <h2 className={styles.heading}>{title}</h2>
+              <p className={styles.body}>{body}</p>
+            </section>
           ))}
-        </Grid>
-      </Box>
-    </Box>
-  );
-}
-
-export default function HomePage() {
-  const infoRef = useRef<HTMLDivElement>(null);
-  return (
-    <main>
-      <Banner scrollTo={infoRef} />
-      <Info ref={infoRef} />
+        </div>
+      </div>
     </main>
   );
 }

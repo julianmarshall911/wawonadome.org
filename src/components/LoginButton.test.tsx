@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as Firebase from '../data/Firebase';
 import LoginButton from './LoginButton';
 import { makeStore } from '../store';
+import { selectAlert } from '../store/alertSlice';
 import { authStateChanged } from '../store/authSlice';
 
 vi.mock('../data/Firebase', () => ({
@@ -30,20 +31,29 @@ const renderButton = () => {
   return { store, router };
 };
 
+const openDialog = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(screen.getByRole('button', { name: /log in/i }));
+  return screen.findByRole('dialog', { name: 'Log in' });
+};
+
 describe('LoginButton', () => {
   beforeEach(() => vi.resetAllMocks());
 
-  it('validates the email after typing', async () => {
+  it('shows field errors on submit instead of logging in', async () => {
     const user = userEvent.setup();
     renderButton();
+    await openDialog(user);
 
-    await user.click(screen.getByRole('button', { name: /log in/i }));
-    await user.type(screen.getByLabelText('Email address'), 'not-an-email');
+    await user.type(screen.getByLabelText('Email address'), 'pat@wawona');
+    await user.type(screen.getByLabelText('Password'), '{Enter}');
 
-    expect(await screen.findByText('Invalid email')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Forgot Password' }),
-    ).toBeDisabled();
+      await screen.findByText(
+        'Enter a full email address, like pat@wawonadome.org.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Enter your password.')).toBeInTheDocument();
+    expect(Firebase.login).not.toHaveBeenCalled();
   });
 
   it('logs in on Enter and goes to the members page', async () => {
@@ -52,8 +62,8 @@ describe('LoginButton', () => {
     } as UserCredential);
     const user = userEvent.setup();
     const { router } = renderButton();
+    await openDialog(user);
 
-    await user.click(screen.getByRole('button', { name: /log in/i }));
     await user.type(screen.getByLabelText('Email address'), 'pat@example.com');
     await user.type(screen.getByLabelText('Password'), 'secret{Enter}');
 
@@ -67,13 +77,27 @@ describe('LoginButton', () => {
     vi.mocked(Firebase.sendPasswordResetEmail).mockResolvedValue();
     const user = userEvent.setup();
     renderButton();
+    await openDialog(user);
 
-    await user.click(screen.getByRole('button', { name: /log in/i }));
     await user.type(screen.getByLabelText('Email address'), 'pat@example.com');
-    await user.click(screen.getByRole('button', { name: 'Forgot Password' }));
+    await user.click(screen.getByRole('button', { name: 'Forgot password' }));
 
     expect(Firebase.sendPasswordResetEmail).toHaveBeenCalledWith(
       'pat@example.com',
     );
+  });
+
+  it('asks for an email before sending a reset', async () => {
+    const user = userEvent.setup();
+    const { store } = renderButton();
+    await openDialog(user);
+
+    await user.click(screen.getByRole('button', { name: 'Forgot password' }));
+
+    expect(Firebase.sendPasswordResetEmail).not.toHaveBeenCalled();
+    expect(selectAlert(store.getState())).toMatchObject({
+      open: true,
+      variant: 'error',
+    });
   });
 });
