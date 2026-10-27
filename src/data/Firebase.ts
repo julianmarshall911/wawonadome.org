@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
+import { type FirebaseApp, initializeApp } from 'firebase/app';
 import {
+  type Auth,
   getAuth,
   onAuthStateChanged,
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
@@ -18,36 +19,64 @@ export interface MemberData {
 
 const env = import.meta.env;
 
-const app = initializeApp({
-  apiKey: env.REACT_APP_API_KEY,
-  authDomain: env.REACT_APP_AUTH_DOMAIN,
-  databaseURL: env.REACT_APP_DATABASE_URL,
-  projectId: env.REACT_APP_PROJECT_ID,
-  storageBucket: env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: env.REACT_APP_MESSAGING_SENDER_ID,
-});
+// Without a config (e.g. no .env.local in development) the public pages still
+// render; logging in fails with a clear message instead of crashing the app.
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+if (env.REACT_APP_API_KEY) {
+  app = initializeApp({
+    apiKey: env.REACT_APP_API_KEY,
+    authDomain: env.REACT_APP_AUTH_DOMAIN,
+    databaseURL: env.REACT_APP_DATABASE_URL,
+    projectId: env.REACT_APP_PROJECT_ID,
+    storageBucket: env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: env.REACT_APP_MESSAGING_SENDER_ID,
+  });
+  auth = getAuth(app);
+} else {
+  console.warn(
+    'Firebase is not configured, so logging in is disabled. Copy .env.example to .env.local and fill in the values.',
+  );
+}
 
-const auth = getAuth(app);
+const requireApp = () => {
+  if (!app || !auth) {
+    throw new Error(
+      "Logging in isn't available right now: the site is missing its Firebase settings.",
+    );
+  }
+  return { app, auth };
+};
 
 // Firestore is only needed once someone is logged in, so keep it out of the
 // initial bundle.
 let firestore: Firestore | undefined;
 const loadFirestore = async () => {
+  const { app } = requireApp();
   const module = await import('firebase/firestore');
   firestore ??= module.getFirestore(app);
   return { firestore, ...module };
 };
 
-export const onAuthChanged = (callback: (user: User | null) => void) =>
-  onAuthStateChanged(auth, callback);
+export const onAuthChanged = (callback: (user: User | null) => void) => {
+  if (!auth) {
+    callback(null);
+    return () => {};
+  }
+  return onAuthStateChanged(auth, callback);
+};
 
-export const login = (email: string, password: string) =>
-  signInWithEmailAndPassword(auth, email, password);
+export const login = async (email: string, password: string) =>
+  signInWithEmailAndPassword(requireApp().auth, email, password);
 
-export const logout = () => signOut(auth);
+export const logout = async () => {
+  if (auth) {
+    await signOut(auth);
+  }
+};
 
-export const sendPasswordResetEmail = (email: string) =>
-  firebaseSendPasswordResetEmail(auth, email);
+export const sendPasswordResetEmail = async (email: string) =>
+  firebaseSendPasswordResetEmail(requireApp().auth, email);
 
 export const getUserData = async (
   email: string,

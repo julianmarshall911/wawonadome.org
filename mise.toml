@@ -1,3 +1,4 @@
 [tools]
+firebase = "latest"
 node = "latest"
 nub = "latest"

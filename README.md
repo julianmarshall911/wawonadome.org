@@ -2,10 +2,9 @@ Source code for the [Wassociates website](https://wawonadome.org)
 
 ## Development
 
-Firebase config is read from a `.env` file (not checked in) using the
-`REACT_APP_API_KEY`, `REACT_APP_AUTH_DOMAIN`, `REACT_APP_DATABASE_URL`,
-`REACT_APP_PROJECT_ID`, `REACT_APP_STORAGE_BUCKET` and
-`REACT_APP_MESSAGING_SENDER_ID` variables.
+Firebase config is read from environment variables. Copy `.env.example` to
+`.env.local` (git-ignored) and fill in the values from the Firebase console.
+Without them the site still runs, but logging in is disabled.
 
 ```sh
 nub install
